@@ -1,0 +1,187 @@
+{
+	"info": {
+		"name": "tcheck-midterm-backend",
+		"description": "API collection for tcheck-midterm-backend — User authentication & management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": ["{{base_url}}"],
+					"path": [""]
+				},
+				"description": "Check if the server is running."
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const json = pm.response.json();",
+							"if (pm.response.code === 201 && json.token) {",
+							"    pm.globals.set('token', json.token);",
+							"    console.log('Token saved: ' + json.token.substring(0, 20) + '...');",
+							"}",
+							"pm.test('User created successfully', function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.expect(json.message).to.eql('User created successfully');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_name\": \"testuser\",\n  \"user_email\": \"test@example.com\",\n  \"user_password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/signup",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "signup"]
+				},
+				"description": "Register a new user account."
+			},
+			"response": []
+		},
+		{
+			"name": "Sign In",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const json = pm.response.json();",
+							"if (pm.response.code === 200 && json.token) {",
+							"    pm.globals.set('token', json.token);",
+							"    console.log('Token saved: ' + json.token.substring(0, 20) + '...');",
+							"}",
+							"pm.test('User signed in successfully', function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.expect(json.message).to.eql('User signed in successfully');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_email\": \"test@example.com\",\n  \"user_password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/signin",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "signin"]
+				},
+				"description": "Sign in with email and password."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Username updated successfully', function () {",
+							"    pm.response.to.have.status(200);",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.eql('Username updated successfully');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "JWT token from sign in"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_name\": \"newusername\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/update-username",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "update-username"]
+				},
+				"description": "Update the authenticated user's username. Requires authentication."
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Out",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('User signed out successfully', function () {",
+							"    pm.response.to.have.status(200);",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.eql('User signed out successfully');",
+							"});",
+							"pm.globals.unset('token');"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/user/signout",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "signout"]
+				},
+				"description": "Sign out the current user."
+			},
+			"response": []
+		}
+	]
+}

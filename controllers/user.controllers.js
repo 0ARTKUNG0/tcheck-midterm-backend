@@ -35,7 +35,7 @@ const SignUp = async (req, res) => {
                 maxAge: 60 * 60 * 1000
             });
             await user.save();
-            return res.status(201).json({message: "User created successfully", user});
+            return res.status(201).json({message: "User created successfully", token, user});
     } catch(error){
         console.log(error);
         return res.status(500).json({message: "Internal server error"});
@@ -63,7 +63,7 @@ const SignIn = async (req, res) => {
             sameSite: "strict",
             maxAge: 60 * 60 * 1000
         });
-        return res.status(200).json({message: "User signed in successfully", user});
+        return res.status(200).json({message: "User signed in successfully", token, user});
     } catch(error){
         console.log(error);
         return res.status(500).json({message: "Internal server error"});
@@ -86,7 +86,7 @@ const updateUsername = async (req, res) => {
         return res.status(400).json({message: "Username is required"});
     }
     try{
-        const user = await User.findById(req.user.user_id);
+        const user = await User.findById(req.user._id);
         if(!user){
             return res.status(401).json({message: "User not found"});
         }
